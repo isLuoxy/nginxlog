@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>图表分析</title>
+
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/dashboard.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Nginx Log</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/">日志数据</a></li>
+                <li><a href="/chart">图表分析</a></li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <input type="text" class="form-control" placeholder="Search...">
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h2 class="sub-header">图表分析</h2>
+        </div>
+    </div>
+</div>
+<div class="text">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-body">
+                    <div id="pie_data" style="mini-width:400px;height:350px">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="main" style="width: 600px;height:400px;"></div>
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="../js/echarts.js"></script>
+<script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('pie_data'));
+
+    var myChart1 = echarts.init(document.getElementById('main'));
+    myChart.showLoading();
+    $.ajax({
+        url: '/status',
+        type: 'post',
+        async: false,
+        dataType: 'json',
+        success: function (result) {
+            myChart.hideLoading();
+            myChart.setOption({
+                title: {
+                    text: '响应状态码',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'vertical',
+                    x: 'left',
+                    data: result
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        mark: {show: true},
+                        dataView: {show: true, readOnly: false},
+                        magicType: {
+                            show: true,
+                            type: ['pie', 'funnel'],
+                            option: {
+                                funnel: {
+                                    x: '25%',
+                                    width: '50%',
+                                    funnelAlign: 'mid',
+                                    max: 1548
+                                }
+                            }
+                        },
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                calculable: true,
+                series: [
+                    {
+                        name: '响应状态码',
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '60%'],
+                        data: result
+                    }
+                ]
+            })
+        }
+    });
+
+
+    // 指定图表的配置项和数据
+    $.ajax({
+        url: '/interviewTime',
+        type: 'post',
+        async: false,
+        dataType: 'json',
+        success: function (result) {
+            myChart1.setOption({
+                title: {
+                    text: '访问时间',
+                    left: 'center'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
+                        '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: result,
+                    type: 'line',
+                    smooth: true
+                }]
+            })
+        }
+    });
+
+</script>
+</body>
+</html>
