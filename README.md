@@ -2,12 +2,6 @@
 
 
 
-:happy: <a href="#v1.0.1">v1.0.1</a>
-
-:slightly_smiling_face: <a href="#v1.0.0">v1.0.0</a>
-
-
-
 ## v1.0.1
 
 在该版本中支持以绝对路径访问 日志文件。
