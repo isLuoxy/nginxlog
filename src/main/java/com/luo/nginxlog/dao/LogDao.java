@@ -5,6 +5,12 @@ import com.luo.nginxlog.entity.Log;
 
 import java.util.List;
 
+/**
+ * 日志表格 dao 层
+ * @author L99
+ * @createDate 2019/1/18
+ *
+ */
 public interface LogDao {
 
     List<Log> getLogList() throws Exception;

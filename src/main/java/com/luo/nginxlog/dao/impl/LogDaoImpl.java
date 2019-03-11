@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * 日志表格 dao 层
  * @author L99
  * @createDate 2019/1/18
  *

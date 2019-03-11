@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- *
+ * 日志图表控制层
  * @author L99
  * @createDate 2019/1/20
  *

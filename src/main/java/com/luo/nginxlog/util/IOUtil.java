@@ -3,7 +3,7 @@ package com.luo.nginxlog.util;
 import java.io.*;
 
 /**
- *
+ * io 流工具
  * @author L99
  * @createDate 2019/1/18
  *
@@ -16,7 +16,7 @@ public class IOUtil {
 
         // 获取 jar 包所在路径
         try {
-            InputStream stream = new BufferedInputStream(new FileInputStream(System.getProperty("user.dir") + "\\" + urlLocation));
+            InputStream stream = new BufferedInputStream(new FileInputStream(urlLocation));
             in = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
         } catch(IOException e){
             // 如果读取命令行文件错误，那么读取默认配置的文件，这种方法能读取到 jar 包下的文件
