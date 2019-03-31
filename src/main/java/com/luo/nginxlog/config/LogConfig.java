@@ -14,16 +14,23 @@ import org.springframework.stereotype.Component;
 public class LogConfig {
 
     /**
-     * 默认值为 test.log ，访问默认的 nginx 日志文件
-     * <b>/resources/test.log</b>
+     * 默认值为 nginx.test.log ，访问默认的 nginx 日志文件
+     * 如果新添加的配置文件中有该属性会覆盖默认值，如果没有覆盖说明配置文件中没有指定日志文件
+     * <b>/resources/nginx.test.log</b>
      */
-    private String location = "test.log";
+    private String location = "nginx.test.log";
+
+    /**
+     * 默认值为 nginx.test.log ，访问默认的 nginx 日志文件，用于当配置文件中的文件路径错误时使用
+     * 当用户输入的文件路径错误，那么会使用默认的日志文件
+     */
+    public static final String SAME_LOCATION = "nginx.test.log";
 
     public String getLocation() {
         return location;
     }
 
-    public void setLocation(String location){
+    public void setLocation(String location) {
         this.location = location;
     }
 }

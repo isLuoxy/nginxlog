@@ -1,21 +1,19 @@
 package com.luo.nginxlog.dao.impl;
 
 
-import com.luo.nginxlog.config.LogConfig;
 import com.luo.nginxlog.dao.LogDao;
 import com.luo.nginxlog.entity.Log;
-import com.luo.nginxlog.util.IOUtil;
+import com.luo.nginxlog.io.IoStrategy;
+import com.luo.nginxlog.io.IoSelect;
 import com.luo.nginxlog.util.PatternUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.BufferedReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,32 +26,54 @@ import java.util.regex.Pattern;
 @Repository
 public class LogDaoImpl implements LogDao {
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    private List<Log> logList;
+
     @Autowired
-    LogConfig logConfig;
+    private IoSelect ioSelect;
+
+    private IoStrategy ioInstance;
+
+    @Override
+    public List<Log> getLogList(long start) throws Exception {
+        logList = new LinkedList<>();
+        ioInstance = ioSelect.getIOInstance();
+        try {
+            List<String> stringList = ioInstance.getLogList(start);
+            Iterator<String> iterator = stringList.iterator();
+            while (iterator.hasNext()) {
+                logList.add(buildLog(iterator.next()));
+            }
+        } catch (Exception e) {
+            logger.error("getLogList error");
+            throw e;
+        }
+
+        return logList;
+    }
 
     @Override
     public List<Log> getLogList() {
-        List<Log> logList = new ArrayList<>(64);
-
-        try {
-            BufferedReader in = IOUtil.getInstance().getBufferedReadStream(logConfig.getLocation());
-            String line;
-            while ((line = in.readLine()) != null) {
-                Log log = new Log();
-                setIp(log, line);
-                setInterviewTime(log, line);
-                setRequestMethod(log, line);
-                setReuqestUrl(log, line);
-                setResponseStatus(log, line);
-                setAgent(log, line);
-                setTime(log, line);
-                logList.add(log);
-            }
-            IOUtil.closeIO();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return logList;
+    }
+
+
+    private Log buildLog(String line) throws ParseException {
+        Log log = new Log();
+        setIp(log, line);
+        try {
+            setInterviewTime(log, line);
+        } catch (ParseException e) {
+            logger.error("set properties error：parse time error");
+            throw e;
+        }
+        setRequestMethod(log, line);
+        setReuqestUrl(log, line);
+        setResponseStatus(log, line);
+        setAgent(log, line);
+        setTime(log, line);
+        return log;
     }
 
     /**
@@ -175,5 +195,18 @@ public class LogDaoImpl implements LogDao {
         }
 
         log.setTime(timeMatcher.group());
+    }
+
+    @Override
+    public long getTotalOfRows() {
+        return ioSelect.getRowsNumber();
+    }
+
+    @Override
+    public int getCurrentPartitionNumbers() {
+        if (ioInstance == null) {
+            return -1;
+        }
+        return ioInstance.getCurrentPartitionNumbers();
     }
 }

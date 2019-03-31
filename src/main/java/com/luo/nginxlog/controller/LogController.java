@@ -2,6 +2,8 @@ package com.luo.nginxlog.controller;
 
 import com.luo.nginxlog.entity.Page;
 import com.luo.nginxlog.service.LogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +30,6 @@ public class LogController {
         page.setPageSize(Integer.valueOf(pageSize));
 
         String logByList = logService.getLogByList(page);
-
         return logByList;
     }
 
